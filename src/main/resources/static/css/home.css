@@ -1,0 +1,113 @@
+/* styles.css */
+
+/* Corps de la page */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* Conteneur principal */
+.container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+
+/* Titre de la page */
+h2 {
+    font-size: 6vmin;
+    font-weight:70;
+    font-family: "Montserrat", sans-serif;
+    color: #1a232f;
+}
+
+/* Formulaire */
+.form-label {
+    font-weight: bold;
+}
+
+.form-control {
+    border-radius: 10px;
+    box-shadow: none;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.25rem rgba(38, 143, 255, 0.25);
+}
+
+/* Bouton de soumission */
+.btn-success {
+    background-color: #28a745;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+/* Animation pour les messages de succès */
+.alert-success {
+    animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Cards des sessions */
+.card {
+    border: none;
+    transition: transform 0.3s ease-in-out;
+    background-color: #5dd9f6;
+
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+.btn-primary {
+    background-color: #1ad4e0;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* Validation des champs du formulaire */
+.needs-validation .form-control:invalid {
+    border-color: red;
+}
+
+.needs-validation .invalid-feedback {
+    display: block;
+}

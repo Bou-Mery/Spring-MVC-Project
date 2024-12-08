@@ -20,8 +20,8 @@ public class Departement {
 
     @Column(name = "nom_departement", nullable = false)
     private String nomDepartement;
+    // Add this to establish the one-to-many relationship
+    @OneToMany(mappedBy = "departement", cascade = CascadeType.ALL)
+    private List<Ensiegnent> enseignants;
 
-    @ManyToOne
-    @JoinColumn(name = "id_session")
-    private Session session;
 }

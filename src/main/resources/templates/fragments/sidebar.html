@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="sidebar" class='active' th:fragment="sidebar"><!--sidebar-->
+    <div class="sidebar-wrapper active">
+        <div class="sidebar-header">
+            <img th:src="@{/images/ucd.png}" style="width: 150px; height: auto;">
+        </div>
+        <div class="sidebar-menu">
+            <ul class="menu">
+
+                <li class='sidebar-title'>Menu Principal</li>
+
+                <li class="sidebar-item" th:classappend="${page == 'dashboard'} ? 'active'">
+                    <a th:href="@{/dashboard(id=${currentSession.idSession})}" class="sidebar-link">
+                        <i data-feather="home" width="20"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item" th:classappend="${page == 'examens'} ? 'active'">
+                    <a th:href="@{/examens}" class='sidebar-link'>
+                        <i data-feather="book" width="20"></i>
+                        <span>Examens</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item" th:classappend="${page == 'surveillance'} ? 'active'">
+                    <a th:href="@{/surveillance}" class='sidebar-link'>
+                        <i data-feather="eye" width="20"></i>
+                        <span>Surveillance</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item" th:classappend="${page == 'emploi'} ? 'active'">
+                    <a th:href="@{/emploi}" class='sidebar-link'>
+                        <i data-feather="calendar" width="20"></i>
+                        <span>Emploi du Temps</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item" th:classappend="${page == 'departements'} ? 'active'">
+                    <a th:href="@{/departements}" class='sidebar-link'>
+                        <i data-feather="grid" width="20"></i>
+                        <span>Départements</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item" th:classappend="${page == 'options'} ? 'active'">
+                    <a th:href="@{/options}" class='sidebar-link'>
+                        <i data-feather="settings" width="20"></i>
+                        <span>Options</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item" th:classappend="${page == 'local'} ? 'active'">
+                    <a th:href="@{/locals}" class='sidebar-link'>
+                        <i data-feather="map" width="20"></i>
+                        <span>Salles & Locaux</span>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+        <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+    </div>
+</div>
+
+<!-- Include Feather Icons script -->
+<script src="https://unpkg.com/feather-icons"></script>
+<script>
+    feather.replace()
+</script>
+</body>
+</html>

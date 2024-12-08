@@ -25,7 +25,7 @@ public class Ensiegnent {
     @Column(name = "numero", nullable = false)
     private String numero;
     @Column(name = "disponibilite", nullable = false)
-    private String disponibilite;
+    private String disponibilite="off";
 
     @ManyToOne
     @JoinColumn(name = "id_departement")

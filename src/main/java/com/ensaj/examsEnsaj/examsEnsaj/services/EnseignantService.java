@@ -1,11 +1,13 @@
 package com.ensaj.examsEnsaj.examsEnsaj.services;
 
+import com.ensaj.examsEnsaj.examsEnsaj.entites.Departement;
 import com.ensaj.examsEnsaj.examsEnsaj.entites.Ensiegnent;
 import com.ensaj.examsEnsaj.examsEnsaj.respository.EnseignantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EnseignantService {
@@ -17,8 +19,9 @@ public class EnseignantService {
         return enseignantRepository.findAll();
     }
 
-    public Ensiegnent getEnseignantById(int id) {
-        return enseignantRepository.findById(id).orElse(null);
+    public Ensiegnent getEnsiegnentById(int id) {
+        Optional<Ensiegnent> optionalEnsiegnent = enseignantRepository.findById(id);
+        return optionalEnsiegnent.orElse(null);
     }
     public Ensiegnent createEnseignant(Ensiegnent enseignant) {
         return enseignantRepository.save(enseignant);
@@ -43,4 +46,8 @@ public class EnseignantService {
         }
         return false;
     }
+    public List<Ensiegnent> getEnseignantsByDepartement(Departement departement) {
+        return enseignantRepository.findByDepartement(departement);
+    }
+
 }

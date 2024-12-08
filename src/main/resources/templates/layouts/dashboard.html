@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Gestion des Sessions</title>
+
+  <!-- Liens CSS -->
+  <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+  <link rel="stylesheet" th:href="@{/css/Chart.min.css}">
+  <link rel="stylesheet" th:href="@{/css/perfect-scrollbar.css}">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <link rel="shortcut icon" th:href="@{/images/favicon.svg}" type="image/x-icon">
+</head>
+
+<body>
+<div id="app">
+  <!-- Barre latérale -->
+  <span th:replace="fragments/sidebar :: sidebar"></span>
+
+  <div id="main">
+    <!-- En-tête -->
+    <span th:replace="fragments/header :: header"></span>
+
+    <div class="main-content container-fluid" layout:fragment="content">
+      <!-- Titre principal -->
+      <div class="page-title">
+        <h3>Tableau de Bord</h3>
+        <p class="text-subtitle text-muted">Détails pour la session sélectionnée</p>
+
+        <!-- Session courante -->
+        <p th:if="${currentSession != null}">
+          Session courante : <b th:text="${currentSession.type}"></b>
+        </p>
+
+        <!-- Admin connecté -->
+        <p th:if="${admin != null}" class="text-muted">
+          Connecté en tant que : <b th:text="${admin.nom}"></b>
+        </p>
+
+        <!-- Lien pour retourner -->
+        <a th:href="@{/home}" class="btn btn-primary mt-3">
+          <i class="bi bi-arrow-left"></i> Retour aux Sessions
+        </a>
+      </div>
+
+      <!-- Section principale -->
+      <section class="section mt-4">
+        <!-- Détails de la session -->
+        <div class="card">
+          <div class="card-body">
+            <h4>Détails de la Session</h4>
+            <p th:if="${currentSession != null}">
+              Type : <b th:text="${currentSession.type}"></b> <br>
+              Date de début : <b th:text="${currentSession.dateDebut}"></b> <br>
+              Date de fin : <b th:text="${currentSession.dateFin}"></b>
+            </p>
+            <p th:if="${currentSession == null}">Aucune session sélectionnée.</p>
+          </div>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="row mt-4">
+          <!-- Total Départements -->
+          <div class="col-12 col-md-6">
+            <div class="card">
+              <div class="card-body">
+                <h5>Total Départements</h5>
+                <p th:text="${departements != null ? departements.size() : 0}">0</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Examens -->
+          <div class="col-12 col-md-6">
+            <div class="card">
+              <div class="card-body">
+                <h5>Total Examens</h5>
+                <p th:text="${exams != null ? exams.size() : 0}">0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Liste des examens -->
+        <div class="mt-4">
+          <h4>Liste des Examens</h4>
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Département</th>
+              <th>Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Examen disponible -->
+            <tr th:each="exam : ${exams}">
+              <td th:text="${exam.nom}"></td>
+              <td th:text="${exam.departement.nom}"></td>
+              <td th:text="${exam.date}"></td>
+            </tr>
+            <!-- Aucun examen -->
+            <tr th:if="${exams == null || exams.size() == 0}">
+              <td colspan="3" class="text-center">Aucun examen disponible.</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+</body>
+<script th:src="@{/js/feather.min.js}"></script>
+<script th:src="@{/js/perfect-scrollbar.min.js}"></script>
+<script th:src="@{/js/app.js}"></script>
+<script th:src="@{/js/Chart.min.js}"></script>
+<script th:src="@{/js/apexcharts.min.js}"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</html>

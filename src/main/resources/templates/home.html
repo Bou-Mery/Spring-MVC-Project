@@ -3,92 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajouter une Session</title>
+    <title>Gestion des Sessions</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" />
+    <link rel="stylesheet" th:href="@{/css/home.css}">
 </head>
 <body>
-<div class="container mt-5">
-    <h2 class="mb-4 text-primary">Ajouter une Session</h2>
-    <div th:if="${successMessage}" class="alert alert-success" role="alert">
-        <span th:text="${successMessage}"></span>
-    </div>
-    <!-- Formulaire d'ajout de session -->
-    <form th:action="@{/sessions}" method="post" class="needs-validation" novalidate>
-        <div class="mb-3">
-            <label for="typeSession" class="form-label">Type de session</label>
-            <select id="typeSession" name="type" class="form-select" required>
-                <option value="" disabled selected>Sélectionnez un type</option>
-                <option value="Normal d'été">Normal d'été</option>
-                <option value="Normal d'hiver">Normal d'hiver</option>
-                <option value="Rattrapage d'été">Rattrapage d'été</option>
-                <option value="Rattrapage d'hiver">Rattrapage d'hiver</option>
-            </select>
-            <div class="invalid-feedback">Veuillez sélectionner un type de session.</div>
-        </div>
-
-        <div class="mb-3">
-            <label for="dateDebut" class="form-label">Date de début</label>
-            <input type="date" id="dateDebut" name="dateDebut" class="form-control" min="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}" required>
-            <div class="invalid-feedback">Veuillez sélectionner une date de début valide.</div>
-        </div>
-
-        <div class="mb-3">
-            <label for="dateFin" class="form-label">Date de fin</label>
-            <input type="date" id="dateFin" name="dateFin" class="form-control" required>
-            <div class="invalid-feedback">Veuillez sélectionner une date de fin valide.</div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="heureMatinDebut" class="form-label">Heure Matin Début</label>
-                <input type="time" id="heureMatinDebut" name="heureMatinDebut" class="form-control" required>
-                <div class="invalid-feedback">Veuillez fournir une heure valide.</div>
-            </div>
-            <div class="col-md-6">
-                <label for="heureMatinFin" class="form-label">Heure Matin Fin</label>
-                <input type="time" id="heureMatinFin" name="heureMatinFin" class="form-control" required>
-                <div class="invalid-feedback">Veuillez fournir une heure valide.</div>
-            </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="heureSoirDebut" class="form-label">Heure Après-midi Début</label>
-                <input type="time" id="heureSoirDebut" name="heureSoirDebut" class="form-control" required>
-                <div class="invalid-feedback">Veuillez fournir une heure valide.</div>
-            </div>
-            <div class="col-md-6">
-                <label for="heureSoirFin" class="form-label">Heure Après-midi Fin</label>
-                <input type="time" id="heureSoirFin" name="heureSoirFin" class="form-control" required>
-                <div class="invalid-feedback">Veuillez fournir une heure valide.</div>
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-success">
-            <i class="fas fa-check-circle"></i> Créer
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container-fluid">
+        <img th:src="@{/images/ucd.png}" alt="Logo" class="img-fluid" style="width: 150px; height: auto;">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
         </button>
-    </form>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle"></i> Profil
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#">Déconnexion</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-    <!-- Liste des sessions -->
-    <div class="mt-5">
-        <h3 class="text-secondary">Liste des Sessions</h3>
-        <div th:if="${sessions != null}">
-            <div class="row row-cols-1 row-cols-md-2 g-4">
-                <div class="col" th:each="csession : ${sessions}">
-                    <a href="/dashboard.html">ssss</a>
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Gestion des Sessions</h2>
 
-                    <div class="card shadow-sm rounded">
-                        <div class="card-body" >
-                      <h5 class="card-title">Type de Session : <span th:text="${csession.type}"></span></h5>
-                            <p class="card-text">Date de Début : <span th:text="${csession.dateDebut}"></span></p>
-                            <p class="card-text">Date de Fin : <span th:text="${csession.dateFin}"></span></p>
+    <!-- Bouton pour ajouter une session -->
+    <div class="d-flex justify-content-end mb-4">
+        <button class="btn btn-primary" onclick="openModal()">
+            <i class="fas fa-plus-circle"></i> Ajouter une Session
+        </button>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Modal pour ajouter une session -->
+    <div class="modal fade" id="sessionModal" tabindex="-1" aria-labelledby="sessionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sessionModalLabel">Ajouter une Session</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="sessionForm" th:action="@{/sessions}" method="post" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="typeSession" class="form-label">Type de session</label>
+                            <select id="typeSession" name="type" class="form-select" required>
+                                <option value="" disabled selected>Sélectionnez un type</option>
+                                <option value="Normal d'été">Normal d'été</option>
+                                <option value="Normal d'hiver">Normal d'hiver</option>
+                                <option value="Rattrapage d'été">Rattrapage d'été</option>
+                                <option value="Rattrapage d'hiver">Rattrapage d'hiver</option>
+                            </select>
+                            <div class="invalid-feedback">Veuillez sélectionner un type de session.</div>
                         </div>
-                    </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="dateDebut" class="form-label">Date de début</label>
+                                <input type="date" id="dateDebut" name="dateDebut" class="form-control" required>
+                                <div class="invalid-feedback">Veuillez fournir une date de début valide.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dateFin" class="form-label">Date de fin</label>
+                                <input type="date" id="dateFin" name="dateFin" class="form-control" required>
+                                <div class="invalid-feedback">Veuillez fournir une date de fin valide.</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-3">
+                            <div class="col-md-6">
+                                <label for="heureMatinDebut" class="form-label">Heure Matin Début</label>
+                                <input type="time" id="heureMatinDebut" name="heureMatinDebut" class="form-control" required>
+                                <div class="invalid-feedback">Veuillez fournir une heure valide.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="heureMatinFin" class="form-label">Heure Matin Fin</label>
+                                <input type="time" id="heureMatinFin" name="heureMatinFin" class="form-control" required>
+                                <div class="invalid-feedback">Veuillez fournir une heure valide.</div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success mt-3 w-100">
+                            <i class="fas fa-check-circle"></i> Créer
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-        <p th:if="${sessions == null}" class="text-muted">Aucune session disponible.</p>
+    </div>
+
+    <!-- Liste des sessions -->
+    <div class="mt-5">
+        <h3 class="text-secondary text-center">Liste des Sessions</h3>
+        <div th:if="${sessions != null}">
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                <div class="col" th:each="csession : ${sessions}">
+                    <a th:href="@{/selectSession/{id}(id=${csession.idSession})}" class="card shadow-sm text-decoration-none text-dark">
+                        <div class="card-body">
+                            <h5 class="card-title">Type : <span th:text="${csession.type}"></span></h5>
+                            <p class="card-text">Début : <span th:text="${csession.dateDebut}"></span></p>
+                            <p class="card-text">Fin : <span th:text="${csession.dateFin}"></span></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <p th:if="${sessions == null}" class="text-muted text-center">Aucune session disponible.</p>
     </div>
 </div>
 
@@ -101,6 +131,24 @@
         dateFin.min = dateDebut.value;
     });
 
+    function openModal() {
+        const modal = new bootstrap.Modal(document.getElementById('sessionModal'));
+        modal.show();
+    }
+
+    (function () {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
 </script>
 </body>
 </html>

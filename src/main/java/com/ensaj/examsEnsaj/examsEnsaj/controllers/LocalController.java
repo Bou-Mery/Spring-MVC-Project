@@ -1,6 +1,7 @@
 package com.ensaj.examsEnsaj.examsEnsaj.controllers;
 
 import com.ensaj.examsEnsaj.examsEnsaj.entites.Local;
+import com.ensaj.examsEnsaj.examsEnsaj.entites.Session;
 import com.ensaj.examsEnsaj.examsEnsaj.services.LocalService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -13,7 +14,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.servlet.http.HttpSession;
 
+
+import javax.swing.text.html.CSS;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -24,14 +28,20 @@ public class LocalController {
 
     @Autowired
     private LocalService localService;
-    @GetMapping("/locals")
-    public String getAllLocals(Model model) {
-        List<Local> locals = localService.getAllLocals();
-        model.addAttribute("locals", locals); // Liste des locaux
-        model.addAttribute("local", new Local()); // Objet vide pour le formulaire
-        return "local";
-    }
 
+    @GetMapping("/locals")
+    public String getAllLocals(Model model, HttpSession httpSession) {
+        List<Local> locals = localService.getAllLocals();
+
+        model.addAttribute("locals", locals);
+        model.addAttribute("local", new Local());
+
+        // Récupérer la session courante
+        Session currentSession = (Session) httpSession.getAttribute("currentSession");
+        model.addAttribute("currentSession", currentSession); // Ajoutez cette ligne
+
+        return "layouts/local";
+    }
     @PostMapping("/locals/save")
     public String saveLocal(@ModelAttribute("local") Local local, Model model) {
         if (!localService.existsByNomAndTailleAndType(local.getNom(), local.getTaille(), local.getType())) {
@@ -54,6 +64,7 @@ public class LocalController {
         }
         return "redirect:/locals?success=updated";
     }
+
     @GetMapping("/locals/delete/{id}")
     public String deleteLocal(@PathVariable("id") int id) {
         localService.deleteLocal(id);
@@ -68,7 +79,6 @@ public class LocalController {
             InputStream inputStream = file.getInputStream();
 
             if ("text/csv".equals(fileType)) {
-
                 CSVParser parser = CSVFormat.DEFAULT.withHeader("Nom", "Taille", "Type").parse(new InputStreamReader(inputStream));
                 for (CSVRecord record : parser) {
                     String nom = record.get("Nom");
@@ -84,7 +94,6 @@ public class LocalController {
                     }
                 }
             } else if ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet".equals(fileType)) {
-
                 XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
                 Sheet sheet = workbook.getSheetAt(0);
                 for (Row row : sheet) {
@@ -102,12 +111,11 @@ public class LocalController {
                 }
             } else {
                 model.addAttribute("error", "Format de fichier non supporté !");
-                return "redirect:/locals?error=format";
+                return "redirect:/locals?error=format"; // Redirection en cas de format non supporté
             }
 
-
             if (!nouveauxLocaux.isEmpty()) {
-                localService.saveAll(nouveauxLocaux);
+                localService.saveAll(nouveauxLocaux); // Sauvegarde des nouveaux locaux
             }
             model.addAttribute("success", "Fichier importé avec succès !");
         } catch (Exception e) {
