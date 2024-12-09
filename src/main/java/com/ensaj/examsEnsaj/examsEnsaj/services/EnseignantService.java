@@ -49,5 +49,11 @@ public class EnseignantService {
     public List<Ensiegnent> getEnseignantsByDepartement(Departement departement) {
         return enseignantRepository.findByDepartement(departement);
     }
+    public boolean existsByNomAndPrenomAndEmail(String nom, String prenom, String email) {
+        return enseignantRepository.existsByNomAndPrenomAndEmail(nom, prenom, email);
+    }
+    public void saveAll(List<Ensiegnent> enseignants) {
+        enseignantRepository.saveAll(enseignants);
+    }
 
 }

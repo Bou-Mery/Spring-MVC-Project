@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Calendar - Gestion des Sessions</title>
+
+    <!-- CSS Links -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/css/Chart.min.css}">
+    <link rel="stylesheet" th:href="@{/css/perfect-scrollbar.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="shortcut icon" th:href="@{/images/favicon.svg}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+    <style>
+        body {
+            background-color: #e9ecef;
+            color: #333;
+            font-family: 'Lato', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #calendar {
+            margin: 20px auto;
+            width: 95%; /* Increased width */
+            max-width: 800px; /* Increased max-width */
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            background-color: white;
+            overflow: hidden;
+        }
+
+        #calendar_header {
+            background-color: #4da5e5;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            border-radius: 15px 15px 0 0;
+            position: relative;
+        }
+
+        #calendar_header h1 {
+            margin: 0;
+            font-size: 2.5em; /* Increased font size */
+        }
+
+        #calendar_weekdays, #calendar_content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        #calendar_weekdays div, #calendar_content div {
+            width: calc(14.285% - 10px);
+            height: 60px; /* Increased height */
+            text-align: center;
+            line-height: 60px; /* Adjusted for increased height */
+            border-radius: 8px;
+            background-color: #FFFFFF;
+            color: #787878;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #calendar_weekdays div {
+            font-weight: bold;
+            color: #4da5e5;
+        }
+
+        #calendar_content div:hover {
+            background-color: #F8F8F8;
+            transform: scale(1.05);
+        }
+
+        #calendar_content div.today {
+            background-color: #5dd9f6;
+            color: white;
+            font-weight: bold;
+        }
+
+        .icon-chevron-left, .icon-chevron-right, .icon-toggle-sidebar {
+            cursor: pointer;
+            color: white;
+            font-size: 2em;
+            line-height: 50px;
+            position: absolute;
+        }
+
+        .icon-chevron-left {
+            left: 20px;
+        }
+
+        .icon-chevron-right {
+            right: 20px;
+        }
+
+        .icon-toggle-sidebar {
+            top: 15px;
+            left: calc(50% - 30px); /* Centered toggle icon */
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- Sidebar Toggle Button -->
+    <i class="fa fa-bars icon-toggle-sidebar" id="toggle-sidebar"></i>
+
+    <!-- Sidebar -->
+    <span th:replace="fragments/sidebar :: sidebar"></span>
+
+    <div id="main">
+        <!-- Header -->
+        <span th:replace="fragments/header :: header"></span>
+
+        <div class="main-content container-fluid mt-4">
+            <div id="calendar">
+                <div id="calendar_header">
+                    <i class="icon-chevron-left" id="prev-month">&#10094;</i>
+                    <h1 id="month-name"></h1>
+                    <i class="icon-chevron-right" id="next-month">&#10095;</i>
+                </div>
+                <div id="calendar_weekdays"></div>
+                <div id="calendar_content"></div>
+                <div style="text-align:center; margin-top:10px;">
+                    <button id="today-button" style="padding:10px; background-color:#FF6860; color:white; border:none; border-radius:5px;">Today</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/feather.min.js}"></script>
+<script th:src="@{/js/perfect-scrollbar.min.js}"></script>
+<script th:src="@{/js/app.js}"></script>
+<script th:src="@{/js/Chart.min.js}"></script>
+<script th:src="@{/js/apexcharts.min.js}"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+<script>
+    $(document).ready(function() {
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth();
+
+        function renderCalendar() {
+            $('#month-name').text(`${monthNames[currentMonth]} ${currentYear}`);
+
+            // Render weekdays
+            $('#calendar_weekdays').html(weekdays.map(day => `<div>${day}</div>`).join(''));
+
+            const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            $('#calendar_content').empty();
+
+            // Add blank days for the first week
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                $('#calendar_content').append('<div class="blank"></div>');
+            }
+
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isToday = (day === new Date().getDate() && currentMonth === new Date().getMonth() && currentYear === new Date().getFullYear());
+                $('#calendar_content').append(`<div class="${isToday ? 'today' : ''}">${day}</div>`);
+            }
+        }
+
+        $('#prev-month').on('click', function() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        });
+
+        $('#next-month').on('click', function() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        });
+
+        $('#today-button').on('click', function() {
+            currentYear = new Date().getFullYear();
+            currentMonth = new Date().getMonth();
+            renderCalendar();
+        });
+
+        // Toggle sidebar visibility
+        $('#toggle-sidebar').on('click', function() {
+            $('#app span[th\\:*]').toggle(); // Toggle sidebar visibility
+        });
+
+        renderCalendar();
+    });
+</script>
+
+</body>
+</html>
