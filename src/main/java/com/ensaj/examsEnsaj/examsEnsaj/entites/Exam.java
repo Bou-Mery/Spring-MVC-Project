@@ -5,55 +5,43 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
-@SuppressWarnings("ALL")
 @Entity
-@Getter
+@Data
 @Setter
+@Getter
 public class Exam {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    @Column(name = "nom_exam")
-    private String nomExam;
+    @Column(name = "date_examen")
+    private String dateExamen;
 
-    @Column(name = "nom_de_module")
-    private String nomModule;
+    @Column(name = "heure_examen")
+    private String heureExamen;
 
+    @Column(name = "module")
+    private String module;
+
+    @Column(name = "option")
+    private String option;
+
+    @Column(name = "responsable_module")
+    private String responsableModule;
+
+    @Column(name = "nombre_etudiants")
+    private int nombreEtudiants;
     @ManyToOne
-    @JoinColumn(name = "id_department", nullable = false)
-    private Departement department;
+    @JoinColumn(name = "id_session")
+    private Session session;
 
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<Local> locals;
 
-    @Column(name = "nbr_etudiants")
-    private int nbrEtudiants;
-
-
-    @Column(name = "date_exam")
-    private LocalDate dateExam;
-
-
-    @Column(name = "heure_exam")
-    private String  heureExam;
-
-    @ManyToOne
-    @JoinColumn(name = "id_local")
-    private Local local;
-
-    @ManyToMany
-    @JoinTable(
-            name = "exam_enseignants",
-            joinColumns = @JoinColumn(name = "exam_id"),
-            inverseJoinColumns = @JoinColumn(name = "enseignant_id")
-    )
-    private List<Ensiegnent> enseignants;
-
-
-
-
+    // Méthode pour définir les locaux d'examen
+    public void setLocaux(List<Local> locaux) {
+        this.locals = locaux;
+    }
 }

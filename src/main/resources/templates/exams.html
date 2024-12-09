@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Examens</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    td {
+      position: relative;
+    }
+    td:hover {
+      background-color: #e6f7ff;
+    }
+    .button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      margin: 5px 0;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      width: 400px;
+      border-radius: 8px;
+    }
+    .modal-header {
+      font-size: 18px;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    .modal-footer {
+      text-align: right;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+  </style>
+  <script>
+    function setExamDetails(cell) {
+      var date = cell.getAttribute('data-date');
+      var creneau = cell.getAttribute('data-creneau');
+
+      document.getElementById("dateInput").value = date;
+      document.getElementById("heureInput").value = creneau;
+      document.getElementById('examListModal').style.display = 'block';
+      document.getElementById('overlay').style.display = 'block';
+
+      console.log("Date sélectionnée : " + date);
+      console.log("Créneau sélectionné : " + creneau);
+    }
+
+    function openAddExamModal() {
+      closeModal();
+      document.getElementById('addExamModal').style.display = 'block';
+      document.getElementById('overlay').style.display = 'block';
+
+      fetch('/locaux')
+              .then(response => response.json())
+              .then(locaux => {
+                const localSelect = document.getElementById('local');
+                localSelect.innerHTML = '';
+                locaux.forEach(local => {
+                  const option = document.createElement('option');
+                  option.value = local.idLocal;
+                  option.text = `${local.nom}`;
+                  localSelect.add(option);
+                });
+              })
+              .catch(error => console.error('Erreur lors de la récupération des locaux :', error));
+    }
+
+    function updateSelectedLocaux() {
+      const localSelect = document.getElementById('local');
+      const selectedLocaux = Array.from(localSelect.selectedOptions).map(option => option.text);
+      const selectedLocauxContainer = document.getElementById('selectedLocaux');
+
+      selectedLocauxContainer.innerHTML = '';
+      selectedLocaux.forEach(local => {
+        const div = document.createElement('div');
+        div.textContent = local;
+        div.className = 'local-item';
+        selectedLocauxContainer.appendChild(div);
+      });
+    }
+
+    function closeModal() {
+      document.getElementById('examListModal').style.display = 'none';
+      document.getElementById('addExamModal').style.display = 'none';
+      document.getElementById('overlay').style.display = 'none';
+    }
+  </script>
+</head>
+<body>
+
+<h1>Emploi du Temps des Examens - Session <span th:text="${csession.type}"></span></h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>Jours</th>
+    <th th:each="creneau : ${creneaux}" th:text="${creneau}"></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="date : ${dates}">
+    <td th:text="${date}"></td>
+    <td th:each="creneau : ${creneaux}"
+        th:data-date="${date}"
+        th:data-creneau="${creneau}">
+      <!-- Bouton pour afficher la liste des examens -->
+      <button class="button" onclick="setExamDetails(this.closest('td'))">ajouter exam</button>
+
+      <!-- Bouton pour ajouter un examen -->
+      <button class="button" th:if="${exams != null && #lists.isEmpty(#lists.filter(exams, 'dateExamen == date and heureExamen == creneau'))}"
+              onclick="openAddExamModal()">Ajouter Examen</button>
+      <form th:action="@{/rec_exam/{date}/{heure}(date=${date}, heure=${creneau})}" method="GET">
+        <button class="button" type="submit">voir exam</button>
+      </form>
+
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<!-- Fenêtre modale pour afficher les examens -->
+<div class="overlay" id="overlay"></div>
+<div class="modal" id="examListModal">
+  <div class="modal-header">Examens programmés</div>
+  <ul class="exam-list" id="examList"></ul>
+  <div class="modal-footer">
+    <button class="button" onclick="openAddExamModal()">Ajouter un Examen</button>
+    <button class="button" onclick="closeModal()">Fermer</button>
+  </div>
+</div>
+
+<!-- Fenêtre modale pour ajouter un examen -->
+<div class="modal" id="addExamModal">
+  <div class="modal-header">Ajouter un Examen</div>
+  <form action="/addExam" method="POST" id="examForm">
+    <label for="dateInput">Date :</label>
+    <input type="text" id="dateInput" name="dateExamen" readonly><br><br>
+
+    <label for="heureInput">Heure :</label>
+    <input type="text" id="heureInput" name="heureExamen" readonly><br><br>
+
+    <label for="responsableModule">Responsable du Module :</label><br>
+    <input type="text" id="responsableModule" name="responsableModule" required><br><br>
+
+    <label for="option">Option :</label><br>
+    <input type="text" id="option" name="option" required><br><br>
+
+    <label for="module">Module :</label><br>
+    <input type="text" id="module" name="module" required><br><br>
+
+    <label for="etudiants">Nombre d'étudiants inscrits :</label><br>
+    <input type="number" id="etudiants" name="nombreEtudiants" required><br><br>
+
+    <label for="local">Locaux d'examen :</label><br>
+    <select id="local" name="locauxExamenIds" multiple onchange="updateSelectedLocaux()"></select><br><br>
+
+    <div id="selectedLocauxContainer">
+      <label>Locaux sélectionnés :</label>
+      <div id="selectedLocaux" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;"></div>
+    </div>
+
+    <input type="hidden" name="sessionId" th:value="${csession.idSession}" />
+
+    <div class="modal-footer">
+      <button type="submit" class="button">Créer</button>
+      <button type="button" class="button" onclick="closeModal()">Fermer</button>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>

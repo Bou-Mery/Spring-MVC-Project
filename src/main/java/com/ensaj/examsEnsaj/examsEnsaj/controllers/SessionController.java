@@ -1,12 +1,8 @@
 package com.ensaj.examsEnsaj.examsEnsaj.controllers;
 import com.ensaj.examsEnsaj.examsEnsaj.entites.Admin;
-import com.ensaj.examsEnsaj.examsEnsaj.entites.Departement;
-import com.ensaj.examsEnsaj.examsEnsaj.entites.Exam;
 import com.ensaj.examsEnsaj.examsEnsaj.entites.Session;
-import com.ensaj.examsEnsaj.examsEnsaj.respository.SessionRepository;
 import com.ensaj.examsEnsaj.examsEnsaj.services.AdminService;
 import com.ensaj.examsEnsaj.examsEnsaj.services.DepartementService;
-import com.ensaj.examsEnsaj.examsEnsaj.services.ExamService;
 import com.ensaj.examsEnsaj.examsEnsaj.services.SessionService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -16,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -26,13 +21,11 @@ public class SessionController {
     private final AdminService adminService;
     private final SessionService sessionService;
     private final DepartementService departementService;
-    private final ExamService examService;
 
-    public SessionController(AdminService adminService, SessionService sessionService, DepartementService departementService, ExamService examService) {
+    public SessionController(AdminService adminService, SessionService sessionService, DepartementService departementService) {
         this.adminService = adminService;
         this.sessionService = sessionService;
         this.departementService = departementService;
-        this.examService = examService;
     }
 /*****************************************************/
     @PostMapping("/sessions")

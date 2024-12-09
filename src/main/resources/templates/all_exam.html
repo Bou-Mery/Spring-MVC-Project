@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liste des Examens</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    td {
+      background-color: #fdfdfd;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: #0056b3;
+    }
+    .no-data {
+      text-align: center;
+      color: #ff0000;
+      font-size: 18px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Liste des Examens</h1>
+
+<div th:if="${not #lists.isEmpty(exams)}">
+  <table>
+    <thead>
+    <tr>
+      <th>Responsable</th>
+      <th>Module</th>
+      <th>Option</th>
+      <th>Nombre d'Étudiants</th>
+      <th>Locaux</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="exam : ${exams}">
+      <td th:text="${exam.responsableModule}"></td>
+      <td th:text="${exam.module}"></td>
+      <td th:text="${exam.option}"></td>
+      <td th:text="${exam.nombreEtudiants}"></td>
+      <td>
+        <span th:each="local : ${exam.locals}" th:text="${local.nom} + ','"></span>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<div th:if="${#lists.isEmpty(exams)}">
+  <p class="no-data">Aucun examen trouvé pour cette date et heure.</p>
+</div>
+
+<div style="text-align: center;">
+  <a href="javascript:history.back()" class="button">Retour</a>
+</div>
+
+</body>
+</html>
