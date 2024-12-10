@@ -1,6 +1,7 @@
 package com.ensaj.examsEnsaj.examsEnsaj.entites;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,8 +26,8 @@ public class Exam {
     @Column(name = "module")
     private String module;
 
-    @Column(name = "option")
-    private String option;
+    @Column(name = "opt")
+    private String opt;
 
     @Column(name = "responsable_module")
     private String responsableModule;

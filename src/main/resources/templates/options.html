@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Options</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <link rel="shortcut icon" th:href="@{/images/favicon.svg}" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+</head>
+<body>
+<div id="app">
+  <!-- Barre latérale -->
+  <span th:replace="fragments/sidebar :: sidebar"></span>
+
+  <div id="main">
+    <!-- En-tête -->
+    <span th:replace="fragments/header :: header"></span>
+
+    <div class="main-content container-fluid mt-4">
+      <div class="header">
+        <h1>Liste des Options</h1>
+      </div>
+      <div class="table-container">
+        <!-- Search Filter -->
+        <div class="mb-4">
+          <label for="filter" class="form-label">Filtrer par nom</label>
+          <input type="text" id="filter" class="form-control" placeholder="Rechercher une option..." onkeyup="filterOptions()">
+        </div>
+
+        <!-- Options Table -->
+        <table class="table table-bordered table-striped table-hover">
+          <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody id="options-table">
+          <tr th:each="option : ${options}">
+            <td th:text="${option.name}">Nom</td>
+            <td>
+              <!-- Actions -->
+              <button class="btn btn-warning btn-sm"
+                      th:data-name="${option.name}"
+                      data-bs-toggle="modal"
+                      data-bs-target="#editModal"
+                      onclick="populateEditForm(this)">Modifier</button>
+              <a th:href="@{'/options/delete/' + ${option.id_Option}}" class="btn btn-danger btn-sm">Supprimer</a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+        <!-- File Upload Form -->
+        <h2>Importer une Option</h2>
+        <form action="/options/import" method="post" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label for="file-upload" class="form-label">Sélectionner un fichier (CSV ou XLSX)</label>
+            <input type="file" id="file-upload" name="file" class="form-control" accept=".csv, .xlsx" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Importer</button>
+        </form>
+
+        <!-- Form to Add a New Option -->
+        <h2>Ajouter une Nouvelle Option</h2>
+        <form action="/options/add" method="post">
+          <div class="mb-3">
+            <label for="nom" class="form-label">Nom de l'Option</label>
+            <input type="text" id="nom" name="name" class="form-control" placeholder="Nom de l'option" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Ajouter</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3">
+      <div class="container">
+        <span class="text-muted">© 2023 Gestion des Options. Tous droits réservés.</span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- Modal to Edit Option -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="/options/edit" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Modifier l'Option</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="edit-id" name="id">
+          <div class="mb-3">
+            <label for="edit-nom" class="form-label">Nom de l'Option</label>
+            <input type="text" id="edit-nom" name="nom" class="form-control" placeholder="Nom de l'option" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-success">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Function to pre-fill the form for editing
+  function populateEditForm(button) {
+    var name = button.getAttribute("data-name");
+    document.getElementById("edit-nom").value = name;
+  }
+
+  // Function to filter the options based on the input
+  function filterOptions() {
+    var input = document.getElementById("filter");
+    var filter = input.value.toLowerCase();
+    var rows = document.getElementById("options-table").getElementsByTagName("tr");
+    for (var i = 0; i < rows.length; i++) {
+      var td = rows[i].getElementsByTagName("td")[0];
+      if (td) {
+        var txtValue = td.textContent || td.innerText;
+        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+          rows[i].style.display = "";
+        } else {
+          rows[i].style.display = "none";
+        }
+      }
+    }
+  }
+</script>
+<script th:src="@{/js/feather.min.js}"></script>
+<script th:src="@{/js/perfect-scrollbar.min.js}"></script>
+<script th:src="@{/js/app.js}"></script>
+<script th:src="@{/js/Chart.min.js}"></script>
+<script th:src="@{/js/apexcharts.min.js}"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>y

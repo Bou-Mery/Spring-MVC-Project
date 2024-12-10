@@ -39,12 +39,16 @@ public class ExamController {
 
 
     @GetMapping("/exam/{sessionId}")
-    public String examensPage(@PathVariable int sessionId, Model model) {
+    public String examensPage(@PathVariable int sessionId, Model model ,HttpSession httpSession) {
         // Récupérer la session
         Session session = sessionService.getSessionById(sessionId);
         List<Local> locaux = localService.getAllLocaux();
         model.addAttribute("locaux", locaux);
         model.addAttribute("csession", session);
+
+        Session currentSession = (Session) httpSession.getAttribute("currentSession");
+        model.addAttribute("currentSession", currentSession);
+
         if (session == null) {
             model.addAttribute("errorMessage", "Session not found");
             return "error";
@@ -122,7 +126,7 @@ public class ExamController {
         exam.setDateExamen(dateExamen);
         exam.setHeureExamen(heureExamen);
         exam.setModule(module);
-        exam.setOption(option);
+        exam.setOpt(option);
         exam.setResponsableModule(responsableModule);
         exam.setNombreEtudiants(nombreEtudiants);
         System.out.println("locaux: " + locaux);
@@ -220,9 +224,11 @@ public class ExamController {
         return creneaux;
     }
 @GetMapping("rec_exam/{date}/{heure}")
-    public String recExam(@PathVariable String  date, @PathVariable String  heure, HttpSession httpSession,Model model) {
+    public String recExam(@PathVariable String  date, @PathVariable String  heure, HttpSession httpSession,Model model ) {
         List<Exam> exams =examService.getExamByDateAndTime(date,heure);
         model.addAttribute("exams", exams);
+        Session currentSession = (Session) httpSession.getAttribute("currentSession");
+        model.addAttribute("currentSession", currentSession); // Ajoutez cette ligne
         return "all_exam";
 
 }
