@@ -4,6 +4,8 @@ import com.ensaj.examsEnsaj.examsEnsaj.entites.Exam;
 import com.ensaj.examsEnsaj.examsEnsaj.entites.Session;
 import com.ensaj.examsEnsaj.examsEnsaj.respository.ExamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest; // Import correct
+import org.springframework.data.domain.Pageable; // Import correct
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,7 @@ public class ExamService {
 
     @Autowired
     private ExamRepository examRepository;
+
     @Transactional
     public Exam creerExam(Exam exam) {
         return examRepository.save(exam);
@@ -37,11 +40,13 @@ public class ExamService {
     public void deleteExam(int id) {
         examRepository.deleteById(id);
     }
-    public List<Exam> getExamByDateAndTime(String date,String heure) {
-        return examRepository.findExamsByDateExamenAndAndHeureExamen(date,heure);
+
+    public List<Exam> getExamByDateAndTime(String date, String heure) {
+        return examRepository.findExamsByDateExamenAndAndHeureExamen(date, heure);
     }
 
-
-
-
+    public List<Exam> getRecentExams() {
+        Pageable pageable = PageRequest.of(0, 5); // Récupérer les 5 derniers examens
+        return examRepository.findTop5ByOrderByDateExamenDesc(pageable);
+    }
 }

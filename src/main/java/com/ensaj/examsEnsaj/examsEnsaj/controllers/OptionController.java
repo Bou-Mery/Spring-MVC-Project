@@ -33,21 +33,18 @@ public class OptionController {
     public String listOptions(Model model , HttpSession httpSession) {
         model.addAttribute("options", optionRepository.findAll());
         Session currentSession = (Session) httpSession.getAttribute("currentSession");
-        model.addAttribute("currentSession", currentSession); // Ajoutez cette ligne
+        model.addAttribute("currentSession", currentSession);
         return "options";
     }
 
     @PostMapping("/add")
     public String addOption(@ModelAttribute Option newOption) {
-        // Vérifier si l'option existe déjà dans la base de données
         if (optionRepository.existsByName(newOption.getName())) {
-            // Si l'option existe déjà, rediriger avec un message d'erreur
-            return "redirect:/options?error=duplicate"; // Vous pouvez passer un paramètre pour gérer le message d'erreur
+            return "redirect:/options?error=duplicate";
         }
 
-        // Si l'option est unique, l'ajouter à la base de données
         optionRepository.save(newOption);
-        return "redirect:/options"; // Rediriger vers la liste des options
+        return "redirect:/options";
     }
 
     @PostMapping("/edit")

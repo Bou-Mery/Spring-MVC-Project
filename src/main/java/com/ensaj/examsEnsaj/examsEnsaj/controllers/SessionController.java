@@ -52,18 +52,7 @@ public class SessionController {
 
     /*******************************************************************/
 
-//    @GetMapping("/selectSession/{id}")
-//    public String selectSession(@PathVariable int id, HttpSession httpSession) {
-//        Session selectedSession = sessionService.getSessionById(id);
-//
-//        if (selectedSession != null) {
-//            // Stocker la session sélectionnée dans la session HTTP
-//            httpSession.setAttribute("currentSession", selectedSession);
-//            return "redirect:/dashboard?id=" + id; // Redirige vers le tableau de bord
-//        }
-//
-//        return "redirect:/home"; // Redirige vers la page d'accueil si la session n'est pas trouvée
-//    }
+
 
     @GetMapping("/selectSession/{id}")
     public String selectSession(@PathVariable int id, HttpSession httpSession) {
@@ -91,30 +80,23 @@ public class SessionController {
     /*******************************************************************/
 
 
-    @GetMapping("/dashboard")
-    public String showDashboard(@RequestParam int id, Model model, HttpSession httpSession) {
-        // Récupérer la session par ID
-        Session session = sessionService.getSessionById(id);
-        model.addAttribute("session", session);
-
-        // Récupérer la session courante
-        Session currentSession = (Session) httpSession.getAttribute("currentSession");
-        model.addAttribute("currentSession", currentSession);
-
-
-
-        return "layouts/dashboard";
-    }
+//    @GetMapping("/dashboard")
+//    public String showDashboard(@RequestParam int id, Model model, HttpSession httpSession) {
+//        // Récupérer la session par ID
+//        Session session = sessionService.getSessionById(id);
+//        model.addAttribute("session", session);
+//
+//        // Récupérer la session courante
+//        Session currentSession = (Session) httpSession.getAttribute("currentSession");
+//        model.addAttribute("currentSession", currentSession);
+//
+//
+//
+//        return "layouts/dashboard";
+//    }
 
     /*******************************************************************/
 
-//    @GetMapping("/home")
-//    public String homePage(Model model) {
-//
-//        Session csession = sessionService.getSessionById(1);
-//        model.addAttribute("csession", csession);
-//        return "home";
-//    }
 
     @GetMapping("/home")
     public String homePage(Model model, HttpSession httpSession) {

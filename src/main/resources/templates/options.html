@@ -43,6 +43,7 @@
             <td>
               <!-- Actions -->
               <button class="btn btn-warning btn-sm"
+                      th:data-id="${option.id_Option}"
                       th:data-name="${option.name}"
                       data-bs-toggle="modal"
                       data-bs-target="#editModal"
@@ -94,10 +95,10 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <input type="hidden" id="edit-id" name="id">
+          <input type="hidden" id="edit-id" name="id_Option">
           <div class="mb-3">
             <label for="edit-nom" class="form-label">Nom de l'Option</label>
-            <input type="text" id="edit-nom" name="nom" class="form-control" placeholder="Nom de l'option" required>
+            <input type="text" id="edit-nom" name="name" class="form-control" placeholder="Nom de l'option" required>
           </div>
         </div>
         <div class="modal-footer">
@@ -113,8 +114,13 @@
 <script>
   // Function to pre-fill the form for editing
   function populateEditForm(button) {
+    // Récupérer les attributs `data-id` et `data-name`
+    var id = button.getAttribute("data-id");
     var name = button.getAttribute("data-name");
-    document.getElementById("edit-nom").value = name;
+
+    // Remplir le formulaire de modification
+    document.getElementById("edit-id").value = id; // ID caché
+    document.getElementById("edit-nom").value = name; // Nom visible
   }
 
   // Function to filter the options based on the input

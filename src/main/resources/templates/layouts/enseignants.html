@@ -82,7 +82,7 @@
                                         <i class="bi bi-pencil-fill"></i>
                                     </button>
                                     <button class="btn btn-danger btn-sm" title="Supprimer"
-                                            th:onclick="'openDeleteModal(' + ${enseignant.idEnseignant} + ')'">
+                                            th:onclick="'window.location.href=\'/enseignants/supprimer/' + ${enseignant.idEnseignant} + '?departementId=' + ${departement.idDepartement} + '\''">
                                         Supprimer
                                     </button>
                                 </td>
