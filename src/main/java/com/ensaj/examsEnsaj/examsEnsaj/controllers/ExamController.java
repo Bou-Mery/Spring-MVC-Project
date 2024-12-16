@@ -1,8 +1,9 @@
 package com.ensaj.examsEnsaj.examsEnsaj.controllers;
 
-import com.ensaj.examsEnsaj.examsEnsaj.entites.Exam;
-import com.ensaj.examsEnsaj.examsEnsaj.entites.Local;
-import com.ensaj.examsEnsaj.examsEnsaj.entites.Session;
+import com.ensaj.examsEnsaj.examsEnsaj.entites.*;
+import com.ensaj.examsEnsaj.examsEnsaj.respository.DepartementRepository;
+import com.ensaj.examsEnsaj.examsEnsaj.respository.OptionRepository;
+import com.ensaj.examsEnsaj.examsEnsaj.services.EnseignantService;
 import com.ensaj.examsEnsaj.examsEnsaj.services.ExamService;
 import com.ensaj.examsEnsaj.examsEnsaj.services.LocalService;
 import com.ensaj.examsEnsaj.examsEnsaj.services.SessionService;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,15 +24,28 @@ import java.util.stream.Collectors;
 
 @Controller
 public class ExamController {
-
+    @Autowired
+    OptionRepository optionRepository;
     @Autowired
     private ExamService examService;
-
+    @Autowired
+    DepartementRepository departementRepository;
     @Autowired
     private SessionService sessionService;
     @Autowired
     private LocalService localService;
+    @Autowired
+    private EnseignantService enseignantService;
 
+    @GetMapping("/enseignants-by-department")
+    @ResponseBody
+    public List<Ensiegnent> getEnseignantsByDepartment(@RequestParam String departmentName) {
+        Departement departement = departementRepository.findByNomDepartement(departmentName);
+        if (departement != null) {
+            return enseignantService.getEnseignantsByDepartement(departement);
+        }
+        return new ArrayList<>();
+    }
     @GetMapping("/locaux")
     @ResponseBody
     public List<Local> getLocaux() {
@@ -43,9 +58,12 @@ public class ExamController {
         // Récupérer la session
         Session session = sessionService.getSessionById(sessionId);
         List<Local> locaux = localService.getAllLocaux();
+        List<Option> options=optionRepository.findAll();
+        List<Departement> departements=departementRepository.findAll();
         model.addAttribute("locaux", locaux);
         model.addAttribute("csession", session);
-
+        model.addAttribute("options", options);
+        model.addAttribute("departements", departements);
         Session currentSession = (Session) httpSession.getAttribute("currentSession");
         model.addAttribute("currentSession", currentSession);
 
@@ -146,14 +164,38 @@ public class ExamController {
     }
 
 
-    @GetMapping("/deleteExam/{id}")
-    public String deleteExam(@PathVariable int id, HttpSession httpSession) {
+    @PostMapping("/deleteExam")
+    public String deleteExam(@RequestParam("id") int id,
+                             HttpSession httpSession,
+                             RedirectAttributes redirectAttributes) {
 
-        Session currentSession = (Session) httpSession.getAttribute("currentSession");
+        Session currentSession = null;
+        try {
+            // Récupérer la session courante
+            currentSession = (Session) httpSession.getAttribute("currentSession");
 
-        examService.deleteExam(id);
+            if (currentSession == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Session invalide");
+                return "redirect:/exams";
+            }
 
-        return "redirect:/exam/" + currentSession.getIdSession();
+            // Supprimer l'examen
+            examService.deleteExam(id);
+
+            // Ajouter un message de succès
+            redirectAttributes.addFlashAttribute("successMessage", "L'examen a été supprimé avec succès");
+
+            // Rediriger vers la page de la session
+            return "redirect:/exam/" + currentSession.getIdSession();
+
+        } catch (Exception e) {
+            // Ajouter un message d'erreur
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Impossible de supprimer l'examen : " + e.getMessage());
+
+            // Redirection en cas d'erreur
+            return "redirect:/exam/" + currentSession.getIdSession();
+        }
     }
 
     public List<String> generateDatesBetween(String dateDebut, String dateFin) throws ParseException {
@@ -223,7 +265,7 @@ public class ExamController {
 
         return creneaux;
     }
-@GetMapping("rec_exam/{date}/{heure}")
+    @GetMapping("rec_exam/{date}/{heure}")
     public String recExam(@PathVariable String  date, @PathVariable String  heure, HttpSession httpSession,Model model ) {
         List<Exam> exams =examService.getExamByDateAndTime(date,heure);
         model.addAttribute("exams", exams);
@@ -231,5 +273,5 @@ public class ExamController {
         model.addAttribute("currentSession", currentSession); // Ajoutez cette ligne
         return "all_exam";
 
-}
+    }
 }

@@ -10,5 +10,5 @@ import java.util.List;
 public interface DepartementRepository extends JpaRepository<Departement, Integer> {
 
     List<Departement> findByNomDepartementContainingIgnoreCase(String nomDepartement);
-
+    Departement findByNomDepartement(String nomDepartement);
 }

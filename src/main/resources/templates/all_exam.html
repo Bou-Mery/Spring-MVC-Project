@@ -17,7 +17,15 @@
   <div id="main">
     <!-- En-tête -->
     <span th:replace="fragments/header :: header"></span>
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+      <span th:text="${successMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <span th:text="${errorMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     <div class="main-content container-fluid mt-4">
       <h1>Liste des Examens</h1>
 
@@ -32,6 +40,7 @@
                 <th>Option</th>
                 <th>Nombre d'Étudiants</th>
                 <th>Locaux</th>
+                <th>Actions</th>
               </tr>
               </thead>
               <tbody>
@@ -42,6 +51,15 @@
                 <td th:text="${exam.nombreEtudiants}"></td>
                 <td>
                   <span th:each="local : ${exam.locals}" th:text="${local.nom} + ' - '"></span>
+                </td>
+                <td>
+                  <form th:action="@{/deleteExam}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet examen ?');">
+                    <input type="hidden" name="id" th:value="${exam.id}" />
+                    <button type="submit" class="btn btn-danger btn-sm">
+                      <i class="bi bi-trash"></i> Supprimer
+                    </button>
+                  </form>
+                </td>
                 </td>
               </tr>
               </tbody>

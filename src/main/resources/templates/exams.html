@@ -110,12 +110,37 @@
 
           <label for="heureInput">Heure :</label>
           <input type="text" id="heureInput" name="heureExamen" readonly class="form-control"><br>
+          <label for="departements">Departements :</label>
+          <select
+                  id="departements"
+                  name="departements"
+                  required
+                  class="form-control"
+                  style="border: none; box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);">
+            <option value="" disabled selected>Veuillez sélectionner un departement</option>
+            <option th:each="depart : ${departements}" th:value="${depart.nomDepartement}" th:text="${depart.nomDepartement}"></option>
+          </select>
 
           <label for="responsableModule">Responsable du Module :</label>
-          <input type="text" id="responsableModule" name="responsableModule" required class="form-control"><br>
+          <select
+                  id="responsableModule"
+                  name="responsableModule"
+                  required
+                  class="form-control"
+                  style="border: none; box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);">
+            <option value="" disabled selected>Sélectionnez un responsable</option>
+          </select>
 
           <label for="option">Option :</label>
-          <input type="text" id="option" name="option" required class="form-control"><br>
+          <select
+                  id="option"
+                  name="option"
+                  required
+                  class="form-control"
+                  style="border: none; box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);">
+            <option value="" disabled selected>Veuillez sélectionner une option</option>
+            <option th:each="option : ${options}" th:value="${option.name}" th:text="${option.name}"></option>
+          </select>
 
           <label for="module">Module :</label>
           <input type="text" id="module" name="module" required class="form-control"><br>
@@ -214,6 +239,26 @@
     if (addExamModal) addExamModal.hide();
     document.getElementById('overlay').style.display = 'none';
   }
+  document.getElementById('departements').addEventListener('change', function() {
+    const departmentName = this.value;
+    const responsableSelect = document.getElementById('responsableModule');
+
+    // Clear existing options
+    responsableSelect.innerHTML = '<option value="" disabled selected>Sélectionnez un responsable</option>';
+
+    // Fetch enseignants for the selected department
+    fetch(`/enseignants-by-department?departmentName=${encodeURIComponent(departmentName)}`)
+            .then(response => response.json())
+            .then(enseignants => {
+              enseignants.forEach(enseignant => {
+                const option = document.createElement('option');
+                option.value = `${enseignant.nom} ${enseignant.prenom}`;
+                option.text = `${enseignant.nom} ${enseignant.prenom}`;
+                responsableSelect.add(option);
+              });
+            })
+            .catch(error => console.error('Erreur lors de la récupération des enseignants:', error));
+  });
 </script>
 
 </body>
