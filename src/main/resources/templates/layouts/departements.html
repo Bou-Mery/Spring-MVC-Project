@@ -127,6 +127,7 @@
         </div>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/feather.min.js}"></script>
 <script th:src="@{/js/perfect-scrollbar.min.js}"></script>
@@ -155,12 +156,9 @@
                             <a href="/departements/delete/${departement.idDepartement}" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce département ?');">
                                 <i class="bi bi-trash"></i> Supprimer
                             </a>
-                            <button class="btn btn-warning btn-sm"
-                                    onclick="fillEditForm(${departement.idDepartement}, '${departement.nomDepartement.replace(/'/g, "\\'")}')"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#editModal">
-                                <i class="bi bi-pencil-square"></i> Modifier
-                            </button>
+                            <button class="btn btn-primary btn-sm"
+                        onclick="fillEditForm(${departement.idDepartement}, '${departement.nomDepartement.replace(/'/g, "\\'")}')"
+                        data-bs-toggle="modal" data-bs-target="#editModal">Modifier</button>
                         </td>
                     </tr>
                 `;
@@ -170,12 +168,11 @@
 
     function fillEditForm(id, name) {
         document.getElementById("editIdDepartement").value = id;
-        document.getElementById("editNomDepartement").value = name.trim();
+        document.getElementById("editNomDepartement").value = name; // Keeps quotes
     }
 
     document.getElementById("fileUploadForm").addEventListener("submit", async (event) => {
         event.preventDefault();
-
         const formData = new FormData(event.target);
 
         try {
@@ -184,13 +181,13 @@
                 body: formData,
             });
 
+            const result = await response.json(); // Parse JSON response
+
             if (response.ok) {
-                const result = await response.json();
                 alert(result.message || 'Fichier importé avec succès.');
                 searchDepartements();
             } else {
-                const errorMessage = await response.json();
-                alert('Erreur: ' + (errorMessage.message || 'Erreur inconnue'));
+                alert('Erreur: ' + (result.message || 'Erreur inconnue'));
             }
         } catch (error) {
             alert('Erreur lors de l\'importation du fichier : ' + error.message);

@@ -13,7 +13,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -61,33 +67,53 @@ public class DepartementController {
     }
     @GetMapping("/search")
     @ResponseBody
-    public List<Departement> searchDepartements(@RequestParam("searchName") String searchName) {
-        if (searchName != null && !searchName.isEmpty()) {
-            return departementService.searchDepartementsByName(searchName);
+    public ResponseEntity<List<Departement>> searchDepartements(@RequestParam("searchName") String searchName) {
+        List<Departement> departements;
+
+        try {
+            if (searchName != null && !searchName.isEmpty()) {
+                departements = departementService.searchDepartementsByName(searchName);
+            } else {
+                departements = departementService.getAllDepartements();
+            }
+
+            // Ensure the list is not null
+            if (departements == null) {
+                departements = new ArrayList<>();
+            }
+
+            return ResponseEntity.ok(departements);
+        } catch (Exception e) {
+            // Log the error for debugging
+            System.err.println("Error while searching departments: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-        return departementService.getAllDepartements();
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
-        try {
+    public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
+        Map<String, String> response = new HashMap<>();
 
-            String contentType = file.getContentType();
-            if (!"text/csv".equals(contentType) && !"application/vnd.ms-excel".equals(contentType)
-                    && !"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet".equals(contentType)) {
-                return ResponseEntity.badRequest().body("Format de fichier non supporté.");
+        if (file.isEmpty()) {
+            response.put("message", "Fichier vide. Veuillez télécharger un fichier valide.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(","); // Assuming CSV is comma-separated
+                Departement departement = new Departement();
+                departement.setNomDepartement(data[0]); // Adjust index based on your CSV structure
+                departementService.createDepartement(departement);
             }
-
-
-            List<Departement> departements = departementService.parseFile(file);
-            departementService.saveAll(departements);
-
-            return ResponseEntity.ok("Fichier importé avec succès.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'importation.");
+            response.put("message", "Fichier importé avec succès.");
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            response.put("message", "Erreur lors de l'importation du fichier: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
     @GetMapping("/{id}/enseignants")
     public String getDepartementEnseignants(@PathVariable int id, Model model ,HttpSession httpSession) {
         Departement departement = departementService.getDepartementById(id);

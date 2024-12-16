@@ -140,6 +140,11 @@
                                     <p class="card-text">Début : <span th:text="${csession.dateDebut}"></span></p>
                                     <p class="card-text">Fin : <span th:text="${csession.dateFin}"></span></p>
                                 </div>
+                                <form th:action="@{/sessions/delete/{id}(id=${csession.idSession})}" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette session ?');">
+                                        <i class="bi bi-trash"></i> Supprimer
+                                    </button>
+                                </form>
                             </a>
                         </div>
                     </div>

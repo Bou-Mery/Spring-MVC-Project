@@ -27,7 +27,7 @@ public class SessionController {
         this.sessionService = sessionService;
         this.departementService = departementService;
     }
-/*****************************************************/
+/*/
     @PostMapping("/sessions")
     public String ajouterSession(Session sessionEntity, Model model, HttpSession httpSession) {
 
@@ -50,7 +50,7 @@ public class SessionController {
         return "home";
     }
 
-    /*******************************************************************/
+    /*/
 
 
 
@@ -77,7 +77,7 @@ public class SessionController {
 
 
 
-    /*******************************************************************/
+    /*/
 
 
 //    @GetMapping("/dashboard")
@@ -95,7 +95,7 @@ public class SessionController {
 //        return "layouts/dashboard";
 //    }
 
-    /*******************************************************************/
+    /*/
 
 
     @GetMapping("/home")
@@ -110,6 +110,18 @@ public class SessionController {
 
         return "home";
     }
+    @PostMapping("/sessions/delete/{id}")
+    public String deleteSession(@PathVariable int id, Model model) {
+        boolean isDeleted = sessionService.deleteSession(id);
+        if (isDeleted) {
+            model.addAttribute("successMessage", "La session a été supprimée avec succès !");
+        } else {
+            model.addAttribute("error", "Échec de la suppression de la session.");
+        }
+
+        List<Session> sessions = sessionService.getAllSessions();
+        model.addAttribute("sessions", sessions);
+        return "home"; // or redirect to another appropriate page
+    }
 
 }
-
