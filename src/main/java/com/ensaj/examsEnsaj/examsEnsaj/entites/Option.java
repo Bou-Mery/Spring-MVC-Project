@@ -2,6 +2,9 @@ package com.ensaj.examsEnsaj.examsEnsaj.entites;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "exam_option")
 public class Option {
@@ -10,6 +13,8 @@ public class Option {
     private int id_Option;
     private String name;
 
+    @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Module> modules = new ArrayList<>();
     // Getters et setters
     public int getId_Option() {
         return id_Option;

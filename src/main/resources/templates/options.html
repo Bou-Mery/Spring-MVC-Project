@@ -39,11 +39,11 @@
           </thead>
           <tbody id="options-table">
           <tr th:each="option : ${options}">
-            <td th:text="${option.name}">Nom</td>
+            <td ><a th:href="@{${option.id_Option} + '/modules'}"
+                    th:text="${option.name}"></a></td>
             <td>
               <!-- Actions -->
               <button class="btn btn-warning btn-sm"
-                      th:data-id="${option.id_Option}"
                       th:data-name="${option.name}"
                       data-bs-toggle="modal"
                       data-bs-target="#editModal"
@@ -95,10 +95,10 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <input type="hidden" id="edit-id" name="id_Option">
+          <input type="hidden" id="edit-id" name="id">
           <div class="mb-3">
             <label for="edit-nom" class="form-label">Nom de l'Option</label>
-            <input type="text" id="edit-nom" name="name" class="form-control" placeholder="Nom de l'option" required>
+            <input type="text" id="edit-nom" name="nom" class="form-control" placeholder="Nom de l'option" required>
           </div>
         </div>
         <div class="modal-footer">
@@ -114,13 +114,8 @@
 <script>
   // Function to pre-fill the form for editing
   function populateEditForm(button) {
-    // Récupérer les attributs `data-id` et `data-name`
-    var id = button.getAttribute("data-id");
     var name = button.getAttribute("data-name");
-
-    // Remplir le formulaire de modification
-    document.getElementById("edit-id").value = id; // ID caché
-    document.getElementById("edit-nom").value = name; // Nom visible
+    document.getElementById("edit-nom").value = name;
   }
 
   // Function to filter the options based on the input
