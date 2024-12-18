@@ -27,7 +27,7 @@ public class SessionController {
         this.sessionService = sessionService;
         this.departementService = departementService;
     }
-/*/
+
     @PostMapping("/sessions")
     public String ajouterSession(Session sessionEntity, Model model, HttpSession httpSession) {
 
@@ -50,7 +50,7 @@ public class SessionController {
         return "home";
     }
 
-    /*/
+
 
 
 

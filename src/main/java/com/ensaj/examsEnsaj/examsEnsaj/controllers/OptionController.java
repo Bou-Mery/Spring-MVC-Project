@@ -49,6 +49,7 @@ public class OptionController {
 
     @PostMapping("/edit")
     public String editOption(@ModelAttribute Option editedOption) {
+        editedOption.setId_Option(editedOption.getId_Option());
         optionRepository.save(editedOption);
         return "redirect:/options";
     }
