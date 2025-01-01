@@ -60,7 +60,8 @@ L'application est basée sur l'architecture **Spring MVC**, qui sépare les resp
 3. **Controller** : Gère les requêtes HTTP et les interactions utilisateur.  
    - Exemple : `SessionController`, `EnseignantController`.  
 
-**Architecture Du Spring MVC** :  
+**Fonctionnement Du Spring MVC** :  
+![Capture d'écran 2024-12-15 185814](https://github.com/user-attachments/assets/ee7f3140-e7cd-4798-9d08-6c291b5d38a6)
 
 
 ## 📂 **Structure du Projet**
@@ -118,11 +119,11 @@ Accédez à l'application : [http://localhost:8080](http://localhost:8080)
 
 ---
 
-## 🤝 **Contributeurs**
+## 🙌  **Contributeurs**
 - BOUKHRAIS Meryem
 - SAKHR Niama
 - CHAJARI Salma
-- ELGHARBI Abdelah
+- EL GHARBI Abdallah
 
 ---
 
