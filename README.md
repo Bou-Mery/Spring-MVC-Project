@@ -79,7 +79,7 @@ L'application est basée sur l'architecture **Spring MVC**, qui sépare les resp
 
 ### 2. **Cloner le Projet**
 ```bash
-git clone https://github.com/votre-repo/exam-surveillance.git
+git clone https://github.com/Bou-Mery/Spring-MVC-Project.git
 cd exam-surveillance
 ```
 
