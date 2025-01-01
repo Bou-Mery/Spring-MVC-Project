@@ -64,7 +64,7 @@ L'application est basée sur l'architecture **Spring MVC**, qui sépare les resp
 
 
 ## 📂 **Structure du Projet**
-
+![image](https://github.com/user-attachments/assets/11dddc34-9293-477e-9d59-eb4b58958021)
 
 
 ---
