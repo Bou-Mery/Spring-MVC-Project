@@ -119,7 +119,8 @@ Accédez à l'application : [http://localhost:8080](http://localhost:8080)
 ![image](https://github.com/user-attachments/assets/fa75e665-f709-4b2b-bf80-8de015e9b080)
 
 4. **Exemple de Gestion des Loucaux**
-![image](https://github.com/user-attachments/assets/c1ac61e6-000b-4f85-8f52-388013b1b879)
+![image](https://github.com/user-attachments/assets/8e4d97ab-58ba-4fcb-93ea-13441c0546d4)
+
 
 5. **Gestion des Examens**
 ![image](https://github.com/user-attachments/assets/c1ac61e6-000b-4f85-8f52-388013b1b879)
