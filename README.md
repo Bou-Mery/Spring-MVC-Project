@@ -1,7 +1,7 @@
 
 ---
 
-# **Application de Surveillance des Examens**
+# 📘** Application de Surveillance des Examens**
 
 ## 📋 **Description**
 Ce projet est une application de surveillance des examens développée avec **Spring MVC** et **Spring Boot**.  
