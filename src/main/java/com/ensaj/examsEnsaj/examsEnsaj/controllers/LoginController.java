@@ -37,7 +37,7 @@ public class LoginController {
     public String processLogin(Admin admin, Model model, HttpSession session) {
         Admin existingAdmin = adminService.findByUsername(admin.getUsername());
 
-        if (existingAdmin != null ) {
+        if (existingAdmin != null && existingAdmin.getPassword().equals(admin.getPassword()) ) {
             session.setAttribute("admin", existingAdmin);
             model.addAttribute("admin", existingAdmin);
 

@@ -30,7 +30,7 @@
                 </li>
 
                 <li class="sidebar-item" th:classappend="${page == 'surveillance'} ? 'active'">
-                    <a th:href="@{/surveillance}"class='sidebar-link'>
+                    <a th:href="@{/survellence/{id}(id=${currentSession.idSession})}" class='sidebar-link'>
                         <i data-feather="eye" width="20"></i>
                         <span>Surveillance</span>
                     </a>

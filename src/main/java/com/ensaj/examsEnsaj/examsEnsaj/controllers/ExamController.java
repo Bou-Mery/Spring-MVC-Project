@@ -36,6 +36,8 @@ public class ExamController {
     private LocalService localService;
     @Autowired
     private EnseignantService enseignantService;
+    @Autowired
+    private SurvellenceService survellenceService;
 
     @GetMapping("/enseignants-by-department")
     @ResponseBody
@@ -149,6 +151,29 @@ public class ExamController {
         exam.setNombreEtudiants(nombreEtudiants);
         System.out.println("locaux: " + locaux);
         exam.setLocaux(locaux);
+        List<Ensiegnent> ensiegnents=enseignantService.getAllEnseignants();
+        List<Survellence> survellences=new ArrayList<>();
+        for (Local l : locaux) {
+            Survellence survellence=new Survellence();
+            survellence.setHeureExamen(heureExamen);
+            survellence.setDateExamen(dateExamen);
+            survellence.setLocal(l);
+            survellences.add(survellence);
+        }
+        for(int i=0;i<survellences.size();i++) {
+            if((!responsableModule.contains(ensiegnents.get(i).getNom()))) {
+                survellences.get(i).setEnseignant(ensiegnents.get(i).getNom());
+            }
+            else{
+                survellences.get(i).setEnseignant(ensiegnents.get(i).getNom());
+                survellences.get(i).getLocal().setNom("TTL");
+            }
+
+        }
+        for (Survellence s : survellences) {
+            survellenceService.save(s);
+        }
+
         exam.setSession(session);
 
         // Sauvegarde dans la base de données
@@ -158,8 +183,6 @@ public class ExamController {
             model.addAttribute("errorMessage", "Failed to save exam: " + e.getMessage());
             return "error";
         }
-
-        // Redirection en cas de succès
         return "redirect:/exam/" + sessionId;
     }
 
@@ -171,7 +194,7 @@ public class ExamController {
 
         Session currentSession = null;
         try {
-            // Récupérer la session courante
+
             currentSession = (Session) httpSession.getAttribute("currentSession");
 
             if (currentSession == null) {

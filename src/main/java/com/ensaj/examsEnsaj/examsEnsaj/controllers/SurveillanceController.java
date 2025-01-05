@@ -1,20 +1,28 @@
 package com.ensaj.examsEnsaj.examsEnsaj.controllers;
 
-import com.ensaj.examsEnsaj.examsEnsaj.entites.Session;
-import jakarta.servlet.http.HttpSession;
+import com.ensaj.examsEnsaj.examsEnsaj.entites.Survellence;
+import com.ensaj.examsEnsaj.examsEnsaj.entites.SurvellenceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.List;
+
 @Controller
 public class SurveillanceController {
 
-    @GetMapping("/surveillance")
-    public String getServeillance(Model model, HttpSession httpSession) {
-        // Récupérer la session courante
-        Session currentSession = (Session) httpSession.getAttribute("currentSession");
-        model.addAttribute("currentSession", currentSession);
+    private final SurvellenceService survellenceService;
 
-        return "surveillance"; // This should match the name of your Thymeleaf template
+    @Autowired
+    public SurveillanceController(SurvellenceService survellenceService) {
+        this.survellenceService = survellenceService;
+    }
+
+    @GetMapping("/surveillance")
+    public String listSurvellence(Model model) {
+        List<Survellence> survellences = survellenceService.findAll();
+        model.addAttribute("survellences", survellences);
+        return "surveillance"; // Chemin du template Thymeleaf
     }
 }

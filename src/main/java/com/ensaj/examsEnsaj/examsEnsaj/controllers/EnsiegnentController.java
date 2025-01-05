@@ -180,7 +180,6 @@ public class EnsiegnentController {
                     // Vérification de l'existence
                     if (!enseignantService.existsByNomAndPrenomAndEmail(nom, prenom, email)) {
                         Ensiegnent enseignant = new Ensiegnent();
-
                         enseignant.setNom(nom);
                         enseignant.setPrenom(prenom);
                         enseignant.setEmail(email);
