@@ -2,6 +2,7 @@ package com.ensaj.examsEnsaj.examsEnsaj.controllers;
 
 import com.ensaj.examsEnsaj.examsEnsaj.entites.*;
 import com.ensaj.examsEnsaj.examsEnsaj.respository.DepartementRepository;
+import com.ensaj.examsEnsaj.examsEnsaj.respository.LocalRepository;
 import com.ensaj.examsEnsaj.examsEnsaj.respository.OptionRepository;
 import com.ensaj.examsEnsaj.examsEnsaj.services.EnseignantService;
 import com.ensaj.examsEnsaj.examsEnsaj.services.ExamService;
@@ -16,6 +17,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -24,6 +29,8 @@ import java.util.stream.Collectors;
 
 @Controller
 public class ExamController {
+    @Autowired
+    LocalRepository localRepository;
     @Autowired
     OptionRepository optionRepository;
     @Autowired
@@ -68,7 +75,6 @@ public class ExamController {
         model.addAttribute("departements", departements);
         Session currentSession = (Session) httpSession.getAttribute("currentSession");
         model.addAttribute("currentSession", currentSession);
-
         if (session == null) {
             model.addAttribute("errorMessage", "Session not found");
             return "error";
@@ -81,6 +87,12 @@ public class ExamController {
 
         try {
             List<String> dates = generateDatesBetween(session.getDateDebut().toString(), session.getDateFin().toString());
+            List<String> reelDate=new ArrayList<>();
+            for(String date: dates) {
+                if(!isFreeDay(date)) {
+                    reelDate.add(date);
+                }
+            }
             List<String> creneaux = generateCreneaux(session);
 
             if (dates == null || dates.isEmpty() || creneaux == null || creneaux.isEmpty()) {
@@ -88,7 +100,7 @@ public class ExamController {
                 return "error";
             }
 
-            model.addAttribute("dates", dates);
+            model.addAttribute("dates", reelDate);
             model.addAttribute("creneaux", creneaux);
             System.out.println("Dates: " + dates);
             System.out.println("Créneaux: " + creneaux);
@@ -96,7 +108,12 @@ public class ExamController {
             model.addAttribute("errorMessage", "Erreur lors du traitement des dates");
             return "error";
         }
+        if (httpSession.getAttribute("first") != null) {
+            if(((int)httpSession.getAttribute("first"))==1){
+            httpSession.setAttribute("erreur",0);
+        }}
 
+        httpSession.setAttribute("first",1);
         return "exams";
     }
     @PostMapping("/addExam")
@@ -108,8 +125,8 @@ public class ExamController {
                           @RequestParam int nombreEtudiants,
                           @RequestParam String locauxExamenIds,  // Changer le type en String
                           @RequestParam(required = false) Integer sessionId,
-                          Model model) {
-
+                          Model model,HttpSession httpSession) {
+        httpSession.setAttribute("erreur", 0);
         // Validation de sessionId
         if (sessionId == null) {
             model.addAttribute("errorMessage", "Session ID is missing");
@@ -160,29 +177,53 @@ public class ExamController {
             survellence.setLocal(l);
             survellences.add(survellence);
         }
+
+
         for(int i=0;i<survellences.size();i++) {
             if((!responsableModule.contains(ensiegnents.get(i).getNom()))) {
                 survellences.get(i).setEnseignant(ensiegnents.get(i).getNom());
             }
             else{
-                survellences.get(i).setEnseignant(ensiegnents.get(i).getNom());
-                survellences.get(i).getLocal().setNom("TTL");
+                survellences.get(i).setEnseignant(ensiegnents.get(i+1).getNom());
+
+            }
+        }
+
+        Survellence survell=new Survellence();
+        survell.setHeureExamen(heureExamen);
+        survell.setDateExamen(dateExamen);
+        survell.setEnseignant(responsableModule);
+        survellences.add(survell);
+
+        if(isTailleMin(locaux,nombreEtudiants)){
+
+            for (Survellence s : survellences) {
+                survellenceService.save(s);
             }
 
         }
-        for (Survellence s : survellences) {
-            survellenceService.save(s);
-        }
+
 
         exam.setSession(session);
 
         // Sauvegarde dans la base de données
         try {
-            examService.creerExam(exam);
+            if(isTailleMin(locaux,nombreEtudiants)){
+                examService.creerExam(exam);
+
+            }
+            else{
+                model.addAttribute("er", 1);
+                httpSession.setAttribute("erreur", 1);
+                httpSession.setAttribute("first", 0);
+
+            }
+
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Failed to save exam: " + e.getMessage());
             return "error";
         }
+
         return "redirect:/exam/" + sessionId;
     }
 
@@ -297,4 +338,26 @@ public class ExamController {
         return "all_exam";
 
     }
+
+    public Boolean isFreeDay(String date) {
+        try {
+            // Convertir la chaîne en LocalDate
+            LocalDate dateTest = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+            // Vérifier si c'est un samedi ou un dimanche
+            DayOfWeek jourDeLaSemaine = dateTest.getDayOfWeek();
+            return jourDeLaSemaine == DayOfWeek.SATURDAY || jourDeLaSemaine == DayOfWeek.SUNDAY;
+        } catch (DateTimeParseException e) {
+            // Gérer les erreurs de format de date
+            System.err.println("Format de date invalide : " + date);
+            return false;
+        }
+    }
+    public Boolean isTailleMin(List<Local> locals, int taille) {
+        double totalTaille = locals.stream()
+                .mapToDouble(Local::getTaille)
+                .sum();
+        return totalTaille > taille;
+    }
+
 }

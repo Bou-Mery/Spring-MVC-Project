@@ -18,7 +18,7 @@ public class Survellence {
     private String heureExamen;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "local_id", nullable = false)
+    @JoinColumn(name = "local_id")
     private Local local;
 
 

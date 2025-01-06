@@ -11,8 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,11 +47,16 @@ public class SurvellenceController {
         // Calcul des dates entre dateDebut et dateFin
 
         List<String> dates = getDatesBetween(session.getDateDebut(), session.getDateFin());
-
+         List<String> eedate=new ArrayList<>();
+         for(String d : dates){
+             if(!isFreeDay(d)){
+                 eedate.add(d);
+             }
+         }
         // Ajout des données au modèle
 
         model.addAttribute("sessions", session);
-        model.addAttribute("dates", dates);
+        model.addAttribute("dates", eedate);
         model.addAttribute("surveillances", surveillances);
 
         return "list";
@@ -92,5 +99,19 @@ public class SurvellenceController {
             start = start.plusDays(1);
         }
         return dates;
+    }
+    public Boolean isFreeDay(String date) {
+        try {
+            // Convertir la chaîne en LocalDate
+            LocalDate dateTest = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+            // Vérifier si c'est un samedi ou un dimanche
+            DayOfWeek jourDeLaSemaine = dateTest.getDayOfWeek();
+            return jourDeLaSemaine == DayOfWeek.SATURDAY || jourDeLaSemaine == DayOfWeek.SUNDAY;
+        } catch (DateTimeParseException e) {
+            // Gérer les erreurs de format de date
+            System.err.println("Format de date invalide : " + date);
+            return false;
+        }
     }
 }

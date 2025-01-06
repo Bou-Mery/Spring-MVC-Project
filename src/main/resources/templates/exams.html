@@ -25,6 +25,9 @@
   </style>
 </head>
 <body>
+<script th:if="${session.erreur == 1}">
+  alert("Le nombre d'étudiants est supérieur à la taille des locaux.");
+</script>
 <div id="app">
   <!-- Barre latérale -->
   <span th:replace="fragments/sidebar :: sidebar"></span>
